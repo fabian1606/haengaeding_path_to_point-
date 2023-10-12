@@ -1,5 +1,3 @@
-const mqtt = require('mqtt');
-
 const client = connect('mqtt://mqtt.hfg.design:1883');
 
 client.on('connect', () => {
