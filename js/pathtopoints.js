@@ -1,3 +1,12 @@
+const mqtt = require('mqtt');
+
+const client = connect('mqtt://mqtt.hfg.design:1883');
+
+client.on('connect', () => {
+    console.log('connected');
+client.publish('topic', 'Nachrichteninhalt');
+});
+
 // All properties needed
 var step_point = 10;
 var current_svg_xml = "";
