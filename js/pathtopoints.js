@@ -258,7 +258,8 @@ function addBelow(name, color, data, nb_pts) {
       below += name ;
       below += "<span>" + nb_pts + " pts</span>";
       below += "</div><div class='bellows__content'>";
-      below += "<textarea rows='10' cols='50'>" + data + "</textarea></div></div>";
+      below += "<textarea rows='10' cols='50'>{" + data.replaceAll("&#13;","},{").replaceAll(",{#}","").replace(/\.\d+/g, '')+ "}</textarea></div></div>";
+      console.log(data);
 
       $('.bellows').append(below);
   }
