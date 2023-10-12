@@ -317,7 +317,7 @@ label {
   /*margin: 8px;*/
 }
 
-#btn-apply, #btn-text {
+#btn-apply, #btn-text, #btn-print {
     cursor: pointer;
     background: #428BCA;
     color: #fff;
@@ -335,6 +335,16 @@ label {
 #btn-text {
   margin-left: 32px;
   width: 160px;
+}
+
+#btn-print {
+  background-color: orange;
+  margin-left: 32px;
+  width: 160px;
+}
+
+#btn-print:hover{
+  background-color: #a7cb26;
 }
 
 #btn-apply:hover, #btn-text:hover {

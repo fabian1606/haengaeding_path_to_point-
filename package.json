@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Shinao/PathToPoints/issues"
   },
-  "homepage": "https://github.com/Shinao/PathToPoints#readme"
+  "homepage": "https://github.com/Shinao/PathToPoints#readme",
+  "dependencies": {
+    "mqtt": "^5.1.2"
+  }
 }

@@ -7,6 +7,8 @@ var itemInsideDropzone = null;
 var dropzone = null;
 var msToWaitAfterOverlay = 250;
 
+let MqttString = null;
+
 $(document).ready(function() {
     setupPointsSetting();
     setupGenerationFromText();
@@ -253,12 +255,14 @@ function generatePointsFromSvg() {
 
 function addBelow(name, color, data, nb_pts) {
       var below = "";
+
+      MqttString = data.replaceAll("&#13;",";").replaceAll(",{#}","").replace(/\.\d+/g, '');
       
       below += "<div class='bellows__item'><div class='bellows__header' style='background-color:" + color + "'>";
       below += name ;
       below += "<span>" + nb_pts + " pts</span>";
       below += "</div><div class='bellows__content'>";
-      below += "<textarea rows='10' cols='50'>{" + data.replaceAll("&#13;","},{").replaceAll(",{#}","").replace(/\.\d+/g, '')+ "}</textarea></div></div>";
+      below += "<textarea rows='10' cols='50'>"+MqttString+"</textarea></div></div>";
       console.log(data);
 
       $('.bellows').append(below);
