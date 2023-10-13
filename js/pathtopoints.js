@@ -1,3 +1,4 @@
+
 var options = {
     host: 'mqtt.hfg.design', // Update with your broker's host
     port: 443, // Update with your broker's WebSocket port
@@ -12,10 +13,11 @@ var client = mqtt.connect(options);
         client.on('connect', function () {
             console.log('Connected to MQTT broker');
             client.subscribe(topic+"/status");
+            client.subscribe(topic+"/data");
         });
         
         client.on('message', function (message) {
-            $('#status').text(message.toString());
+            console.log(message.toString());
         });
 
         client.on('error', function (error) {
@@ -179,6 +181,7 @@ function setupPointsSetting() {
     });
 
     $('#btn-print').click(function() {
+        console.log(MqttString);
         if(MqttString != null){
         client.publish(topic+"/data", MqttString);
         console.log("published")}
@@ -282,7 +285,10 @@ function generatePointsFromSvg() {
 
         all_points_count += c;
         all_points += data_points + "#&#13;";
+        data_points = data_points+"#;"
+        console.log(data_points);
         addBelow("Path " + i, color, data_points, c / step_point);
+        
     }
 
 
@@ -292,20 +298,39 @@ function generatePointsFromSvg() {
     hideHoldOnOverlay();
 }
 
+function translateToUint8Array(inputArray) {
+    const flattenedArray = inputArray.reduce((acc, row) => acc.concat(row), []);
+    const uint8Array = flattenedArray.map(value => Math.max(0, Math.min(255, value)));
+    return new Uint8Array(uint8Array);
+}
+
+
 function addBelow(name, color, data, nb_pts) {
       var below = "";
 
     //   console.log(data);
-      MqttString = data.replaceAll("&#13;",";").replaceAll("#;","").replace(/\.\d+/g, '').replace(/.$/, '');
+    console.log(data);
+      MqttString = "A,A;"+data.replaceAll("&#13;",";").replaceAll("#;","A,A;").replace(/\.\d+/g, '').replace(/.$/, '')+";0,0";
       if(name == "All Paths"){
-        console.log(MqttString);
         let StringArray = MqttString.split(";");
         newString = MapDown(StringArray);
+        console.log("here");
         console.log(newString);
-        for(let i = 0; i < newString.length; i++){
-            newString[i] = newString[i].join(",");
-        }
-        MqttString = newString.join(";");
+    let Uarray = translateToUint8Array(newString);
+    console.log(Uarray);   
+    // let CharArray = [];
+        // for(let i = 0; i < Uarray.length; i++){
+        //     console.log(Uarray[i]);
+        //     CharArray.push(String.fromCharCode(Uarray[i]));
+        // }
+
+        MqttString = Uarray;
+
+
+        // console.log(CharArray);
+        // CharArray = CharArray.join("");
+        // console.log(CharArray);
+        console.log(MqttString);
       }
       
     //   below += "<div class='bellows__item'><div class='bellows__header' style='background-color:" + color + "'>";
@@ -334,7 +359,6 @@ function manageDropFromTitle(evt) {
 }
 
 function MapMax(array){
-    console.log(array);
     let max = 0;
     for(let i = 0; i < array.length; i++){
         if(array[i][0] > max){
@@ -344,17 +368,26 @@ function MapMax(array){
           max = array[i][1];
         }
     }
-    console.log(max);
   
-    if(max > 300){
-      console.log("max is bigger than 100");
-      let factor = max / 300;
+let resolution = 250;
+
+    if(max > resolution){
+      let factor = max / resolution;
   
       for(let i = 0; i < array.length; i++){
+        console.log(array[i][0] + " " + array[i][1])
+        if(isNaN(array[i][0]) || isNaN(array[i][1])){
+            console.log("not number");
+            array[i][0] = 255;
+            array[i][1] = 255;
+        }else{
             array[i][0] = Math.round(array[i][0] / factor);
             array[i][1] = Math.round(array[i][1] / factor);
+        }
       }
     }
+
+    console.log(array);
     return array;
   }
 
@@ -364,7 +397,6 @@ for(let i = 0; i < String.length; i++){
     String[i][0] = parseInt(String[i][0]);
     String[i][1] = parseInt(String[i][1]);
 }
-console.log(String);
 
 return MapMax(String);
 }
