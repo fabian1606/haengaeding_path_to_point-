@@ -11,17 +11,17 @@ var client = mqtt.connect(options);
 
         client.on('connect', function () {
             console.log('Connected to MQTT broker');
-            client.subscribe(topic);
+            client.subscribe(topic+"/status");
         });
         
         client.on('message', function (message) {
-            console.log('code send succesfully to', message.toString());
-
+            $('#status').text(message.toString());
         });
 
         client.on('error', function (error) {
             console.log('MQTT client error:', error);
         });
+
         
 
 // All properties needed
@@ -180,11 +180,12 @@ function setupPointsSetting() {
 
     $('#btn-print').click(function() {
         if(MqttString != null){
-        client.publish(topic, MqttString);
+        client.publish(topic+"/data", MqttString);
         console.log("published")}
         else{
             console.log("no string");
         }
+        $('#status').text("data send");
     });
 }
 
@@ -284,6 +285,7 @@ function generatePointsFromSvg() {
         addBelow("Path " + i, color, data_points, c / step_point);
     }
 
+
     addBelow("All Paths", "#2A2A2A", all_points, all_points_count / step_point);
     
     $('.bellows').bellows();
@@ -293,14 +295,25 @@ function generatePointsFromSvg() {
 function addBelow(name, color, data, nb_pts) {
       var below = "";
 
+    //   console.log(data);
       MqttString = data.replaceAll("&#13;",";").replaceAll("#;","").replace(/\.\d+/g, '').replace(/.$/, '');
+      if(name == "All Paths"){
+        console.log(MqttString);
+        let StringArray = MqttString.split(";");
+        newString = MapDown(StringArray);
+        console.log(newString);
+        for(let i = 0; i < newString.length; i++){
+            newString[i] = newString[i].join(",");
+        }
+        MqttString = newString.join(";");
+      }
       
-      below += "<div class='bellows__item'><div class='bellows__header' style='background-color:" + color + "'>";
-      below += name ;
-      below += "<span>" + nb_pts + " pts</span>";
-      below += "</div><div class='bellows__content'>";
-      below += "<textarea rows='10' cols='50'>"+MqttString+"</textarea></div></div>";
-      console.log(MqttString);
+    //   below += "<div class='bellows__item'><div class='bellows__header' style='background-color:" + color + "'>";
+    //   below += name ;
+    //   below += "<span>" + nb_pts + " pts</span>";
+    //   below += "</div><div class='bellows__content'>";
+    //   below += "<textarea rows='10' cols='50'>"+MqttString+"</textarea></div></div>";
+    //   console.log(MqttString);
 
       $('.bellows').append(below);
   }
@@ -318,4 +331,40 @@ function manageDropFromTitle(evt) {
         current_svg_xml = $("#svgTitle")[0].outerHTML;
         generatePointsFromSvg();
     }
+}
+
+function MapMax(array){
+    console.log(array);
+    let max = 0;
+    for(let i = 0; i < array.length; i++){
+        if(array[i][0] > max){
+          max = array[i][0];
+        }
+        if(array[i][1] > max){
+          max = array[i][1];
+        }
+    }
+    console.log(max);
+  
+    if(max > 300){
+      console.log("max is bigger than 100");
+      let factor = max / 300;
+  
+      for(let i = 0; i < array.length; i++){
+            array[i][0] = Math.round(array[i][0] / factor);
+            array[i][1] = Math.round(array[i][1] / factor);
+      }
+    }
+    return array;
+  }
+
+function MapDown(String){
+for(let i = 0; i < String.length; i++){
+    String[i] = String[i].split(",");
+    String[i][0] = parseInt(String[i][0]);
+    String[i][1] = parseInt(String[i][1]);
+}
+console.log(String);
+
+return MapMax(String);
 }

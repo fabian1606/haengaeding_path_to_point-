@@ -255,9 +255,9 @@ html, body {
 
 #canvas {
   padding-right: 10%;
-  float: right;
+  margin-left: 20%;
   width: 70%;
-  height: 70%;
+  height: 30%;
 }
 
 #dropzone.dz-drag-hover { border-style: solid; }
