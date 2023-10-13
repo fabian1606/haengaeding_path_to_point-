@@ -29,6 +29,12 @@ input {
   font-size: 12px;
 }
 
+#status-header{
+  margin-top: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
 ol, ul { list-style: none; }
 
 blockquote, q { quotes: none; }

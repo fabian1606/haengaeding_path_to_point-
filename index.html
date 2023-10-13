@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/bellows-theme.min.css">
     <link rel="stylesheet" href="css/HoldOn.min.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.1.0/mqtt.min.js"></script>
     <script src="js/jquery-2.2.1.min.js"></script>
     <script src="js/opentype.min.js"></script>
     <script src="js/plugin.min.js"></script>
@@ -27,14 +28,14 @@
   </head>
   
   <body>
-    <img id="title" src="img/TitlePathToPoints.svg" alt="PathToPoints"/>
-
-    <div id="dropzone" class="needsclick dz-clickable">
+    
+    <div style="margin-top: 100px;" id="dropzone" class="needsclick dz-clickable">
         <div class="dz-message needsclick">
             Drop SVG file here or click to upload.<br>
             <span class="note needsclick">Only the path attribute is taken into account, everything else is ignored. The preview can be a bit strange because of that.</span>
         </div>
     </div>
+    <h4 id="status-header">Status: <span id="span">drop svg</span></h4>
     
     <div id="settings">
         Point every x length
@@ -42,6 +43,7 @@
         <button type="text" id="btn-apply">Apply</button>
         <button type="text" id="btn-text">Generate from text</button>
         <button type="text" id="btn-print">Print</button>
+        <!-- <button type="text" id="btn-connecting">Mqtt Connection</button> -->
     </div>
     
     <div class="bellows">
@@ -107,9 +109,9 @@
         <br/>
         <input class="text ui-widget-content ui-corner-all" id="text_svg" type="text" name="text_svg" value=""/>
     </div>
-  </body>
-  <link rel="stylesheet" href="jquery-ui/jquery-ui.min.css">
-  <link rel="stylesheet" href="jquery-ui/jquery-ui.structure.min.css">
-  <link rel="stylesheet" href="jquery-ui/jquery-ui.theme.min.css">
-  <script src="jquery-ui/jquery-ui.min.js"></script>
+</body>
+<link rel="stylesheet" href="jquery-ui/jquery-ui.min.css">
+<link rel="stylesheet" href="jquery-ui/jquery-ui.structure.min.css">
+<link rel="stylesheet" href="jquery-ui/jquery-ui.theme.min.css">
+<script src="jquery-ui/jquery-ui.min.js"></script>
 </html>

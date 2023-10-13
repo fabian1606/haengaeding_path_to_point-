@@ -1,9 +1,28 @@
-const client = connect('mqtt://mqtt.hfg.design:1883');
+var options = {
+    host: 'mqtt.hfg.design', // Update with your broker's host
+    port: 443, // Update with your broker's WebSocket port
+    protocol: "wss", // or 'wss' if TLS is required
+    path: '/mqtt', // Update with your broker's path
+};
 
-client.on('connect', () => {
-    console.log('connected');
-client.publish('topic', 'Nachrichteninhalt');
-});
+let topic = "haengaeding";
+var client = mqtt.connect(options);
+
+
+        client.on('connect', function () {
+            console.log('Connected to MQTT broker');
+            client.subscribe(topic);
+        });
+        
+        client.on('message', function (message) {
+            console.log('code send succesfully to', message.toString());
+
+        });
+
+        client.on('error', function (error) {
+            console.log('MQTT client error:', error);
+        });
+        
 
 // All properties needed
 var step_point = 10;
@@ -158,6 +177,15 @@ function setupPointsSetting() {
         if (step_point <= 0) step_point = 1;
         setTimeout(generatePointsFromSvg, 500);
     });
+
+    $('#btn-print').click(function() {
+        if(MqttString != null){
+        client.publish(topic, MqttString);
+        console.log("published")}
+        else{
+            console.log("no string");
+        }
+    });
 }
 
 function getInfosFromPaths(paths) {
@@ -239,12 +267,14 @@ function generatePointsFromSvg() {
         var data_points = "";
         var color = randomColor();
         var c;
+
         for (c = 0; c < Raphael.getTotalLength(path); c += step_point) {
             var point = Raphael.getPointAtLength(path, c);
 
+
             data_points += point.x + "," + point.y + "&#13;";
             var circle = paper.circle(point.x * paths_info.scale, point.y * paths_info.scale, 2)
-                .attr("fill", color)
+                .attr("fill", `${c==0?"black":color}`)
                 .attr("stroke", "none")
                 .transform("T" + offset_path_x * paths_info.scale + "," + offset_path_y * paths_info.scale);
         }
@@ -263,14 +293,14 @@ function generatePointsFromSvg() {
 function addBelow(name, color, data, nb_pts) {
       var below = "";
 
-      MqttString = data.replaceAll("&#13;",";").replaceAll(",{#}","").replace(/\.\d+/g, '');
+      MqttString = data.replaceAll("&#13;",";").replaceAll("#;","").replace(/\.\d+/g, '').replace(/.$/, '');
       
       below += "<div class='bellows__item'><div class='bellows__header' style='background-color:" + color + "'>";
       below += name ;
       below += "<span>" + nb_pts + " pts</span>";
       below += "</div><div class='bellows__content'>";
       below += "<textarea rows='10' cols='50'>"+MqttString+"</textarea></div></div>";
-      console.log(data);
+      console.log(MqttString);
 
       $('.bellows').append(below);
   }
